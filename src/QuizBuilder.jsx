@@ -166,7 +166,7 @@ export default function QuizBuilder() {
 
   // ── Shared API caller ────────────────────────────────────────────────────────
   const callAPI=async(prompt,maxTok=4000)=>{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{
+    const r=await fetch("/api/chat",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:maxTok,messages:[{role:"user",content:prompt}]})
