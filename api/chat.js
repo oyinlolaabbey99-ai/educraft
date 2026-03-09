@@ -14,16 +14,31 @@ export default async function handler(req, res) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: max_tokens || 4000 }
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: {
+            maxOutputTokens: max_tokens || 4000,
+            temperature: 0.7
+          }
         }),
       }
     );
+
     const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    if (data.error) {
+      return res.status(200).json({ error: { message: data.error.message } });
+    }
+
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!text) {
+      return res.status(200).json({ error: { message: `Gemini error: ${JSON.stringify(data)}` } });
+    }
+
     res.status(200).json({
       content: [{ type: 'text', text }]
     });
+
   } catch (error) {
     res.status(500).json({ error: { message: error.message } });
   }
