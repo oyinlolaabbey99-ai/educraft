@@ -6,22 +6,20 @@ export default async function handler(req, res) {
 
   try {
     const { messages, max_tokens } = req.body;
-    const prompt = messages[0].content;
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: {
-            maxOutputTokens: max_tokens || 4000,
-            temperature: 0.7
-          }
-        }),
-      }
-    );
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: messages,
+        max_tokens: max_tokens || 4000,
+        temperature: 0.7
+      }),
+    });
 
     const data = await response.json();
 
@@ -29,10 +27,10 @@ export default async function handler(req, res) {
       return res.status(200).json({ error: { message: data.error.message } });
     }
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const text = data.choices?.[0]?.message?.content;
 
     if (!text) {
-      return res.status(200).json({ error: { message: `Gemini error: ${JSON.stringify(data)}` } });
+      return res.status(200).json({ error: { message: 'Empty response from Groq' } });
     }
 
     res.status(200).json({
