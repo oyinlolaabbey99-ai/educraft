@@ -13,11 +13,3 @@
   "theme_color": "#0c1f3f",
   "background_color": "#eef2f8"
 }
-```
-Press **`Ctrl+S`** to save.
-
-Then go to your terminal and run:
-```
-git add .
-git commit -m "add PWA support"
-git push
