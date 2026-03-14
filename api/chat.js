@@ -16,7 +16,7 @@
       body: JSON.stringify({
         model: 'meta-llama/llama-4-scout-17b-16e-instruct',
         messages: messages,
-        max_tokens: max_tokens || 4000,
+        max_tokens: max_tokens || 8000,
         temperature: 0.7
       }),
     });
