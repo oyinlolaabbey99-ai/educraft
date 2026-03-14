@@ -119,10 +119,10 @@ export default function StudentApp() {
     const allSubjects = ['Use of English', ...selectedSubjects];
     // English: 3 batches of 20 = 60 | Each elective: 2 batches of 20 = 40
     const batches = [
-      { subject:'Use of English', count:20 },
-      { subject:'Use of English', count:20 },
-      { subject:'Use of English', count:20 },
-      ...selectedSubjects.flatMap(s => [{ subject:s, count:20 },{ subject:s, count:20 }])
+      { subject:'Use of English', count:10 },
+      { subject:'Use of English', count:10 },
+      { subject:'Use of English', count:10 },
+      ...selectedSubjects.flatMap(s => [{ subject:s, count:10 },{ subject:s, count:10 }])
     ];
     setGenProgress({ done:0, total:batches.length });
 
