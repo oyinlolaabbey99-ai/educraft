@@ -16,9 +16,8 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: 'meta-llama/llama-4-scout-17b-16e-instruct',
         messages: messages,
-        max_tokens: 8000,
+        max_tokens: max_tokens || 8000,
         temperature: 0.7,
-        response_format: { type: "json_object" }
       }),
     });
 
@@ -28,14 +27,33 @@ export default async function handler(req, res) {
       return res.status(200).json({ error: { message: data.error.message } });
     }
 
-    const text = data.choices?.[0]?.message?.content;
+    let text = data.choices?.[0]?.message?.content;
 
     if (!text) {
       return res.status(200).json({ error: { message: 'Empty response from Groq' } });
     }
 
+    // Strip markdown code blocks if present
+    text = text.replace(/```json|```/g, '').trim();
+
+    // Find the outermost JSON structure — array or object
+    const firstChar = text[text.indexOf('[') < text.indexOf('{') || text.indexOf('[') === -1 ? text.indexOf('{') : text.indexOf('[')];
+    const arrStart = text.indexOf('[');
+    const objStart = text.indexOf('{');
+    let clean = text;
+
+    if (arrStart !== -1 && (objStart === -1 || arrStart < objStart)) {
+      // Response is an array
+      const end = text.lastIndexOf(']');
+      if (end !== -1) clean = text.substring(arrStart, end + 1);
+    } else if (objStart !== -1) {
+      // Response is an object — wrap in array if needed
+      const end = text.lastIndexOf('}');
+      if (end !== -1) clean = text.substring(objStart, end + 1);
+    }
+
     res.status(200).json({
-      content: [{ type: 'text', text }]
+      content: [{ type: 'text', text: clean }]
     });
 
   } catch (error) {
