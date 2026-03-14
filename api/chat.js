@@ -1,4 +1,4 @@
- export default async function handler(req, res) {
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -16,8 +16,9 @@
       body: JSON.stringify({
         model: 'meta-llama/llama-4-scout-17b-16e-instruct',
         messages: messages,
-        max_tokens: max_tokens || 8000,
-        temperature: 0.7
+        max_tokens: 8000,
+        temperature: 0.7,
+        response_format: { type: "json_object" }
       }),
     });
 
